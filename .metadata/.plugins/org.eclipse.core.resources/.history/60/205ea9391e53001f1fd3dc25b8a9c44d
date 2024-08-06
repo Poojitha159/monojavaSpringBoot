@@ -1,0 +1,18 @@
+package com.techlabs.app.service;
+
+import java.util.List;
+import java.util.Optional;
+
+import com.techlabs.app.entity.Student;
+
+public interface StudentCourseService {
+
+	Student saveStudent(Student student);
+
+	List<Student> getAllStudents();
+
+	Optional<Student> getStudentById(int id);
+
+	void deleteStudent(int id);
+
+}

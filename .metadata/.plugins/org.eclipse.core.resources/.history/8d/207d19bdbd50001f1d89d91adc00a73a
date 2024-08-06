@@ -1,0 +1,45 @@
+package com.techlabs.app.controller;
+
+import java.util.List;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.techlabs.app.entity.Instructor;
+import com.techlabs.app.service.InstructorService;
+
+@RestController
+@RequestMapping("/api/instructor")
+public class InstructorController {
+	private InstructorService instructorService;
+
+	public InstructorController(InstructorService instructorService) {
+		super();
+		this.instructorService = instructorService;
+	}
+
+	@GetMapping()
+	public List<Instructor> getAllInstructors(){
+		return instructorService.findAllInstructors();
+		
+	}
+	
+	@PostMapping
+	public Instructor addNewInstructor(@RequestBody Instructor instructor) {
+		instructorService.saveInstructor(instructor);
+	}
+	
+	
+	
+	
+	@DeleteMapping
+	public void deleteInstructor(@PathVariable int id) {
+		instructorService.deleteById(id);
+	}
+}

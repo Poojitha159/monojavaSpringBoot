@@ -1,0 +1,152 @@
+
+package com.techlabs.app.controller;
+
+import java.util.List;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import com.techlabs.app.dto.EmployeeDTO;
+import com.techlabs.app.dto.EmployeeResponseDTO;
+import com.techlabs.app.entity.Employee;
+import com.techlabs.app.exception.EmployeeNotFoundException;
+import com.techlabs.app.service.EmployeeService;
+import com.techlabs.app.util.PagedResponse;
+import com.techlabs.app.service.EmployeeService;
+
+import jakarta.validation.Valid;
+
+@RestController
+@RequestMapping("/employees")
+public class EmployeeController {
+
+	private EmployeeService employeeService;
+
+	public EmployeeController(EmployeeService employeeService) {
+		this.employeeService = employeeService;
+	}
+
+	@GetMapping
+  public ResponseEntity<PagedResponse<EmployeeResponseDTO>> getAllEmployees(
+		  @RequestParam(name="page",defaultValue="0") int page,
+  @RequestParam(name="size", defaultValue="5") int size,
+  @RequestParam(defaultValue="salary") String sortBy)
+   {
+		System.out.println(page);
+		System.out.println(size);
+		PagedResponse<EmployeeResponseDTO> employees = employeeService.getAllEmployees(page,size,sortBy);
+    return new ResponseEntity<PagedResponse<EmployeeResponseDTO>>(employees, HttpStatus.OK);
+  }
+
+	@GetMapping("/{id}")
+	public ResponseEntity<EmployeeResponseDTO> getEmployeeById(@PathVariable int id) {
+		EmployeeResponseDTO employee = employeeService.getEmployeeById(id);
+		if (employee == null) {
+			throw new EmployeeNotFoundException("Employee with ID " + id + " not found");
+		}
+		return new ResponseEntity<>(employee, HttpStatus.OK);
+	}
+
+	@PostMapping
+	public ResponseEntity<EmployeeResponseDTO> addEmployee(@Valid @RequestBody EmployeeDTO employeeDTO) {
+		EmployeeResponseDTO savedEmployee = employeeService.saveAndUpdate(employeeDTO);
+		return new ResponseEntity<>(savedEmployee, HttpStatus.CREATED);
+	}
+
+	@PutMapping("/{id}")
+	public ResponseEntity<EmployeeResponseDTO> updateEmployee(@PathVariable int id,
+			@Valid @RequestBody EmployeeDTO employeeDTO) {
+		EmployeeResponseDTO existingEmployee = employeeService.getEmployeeById(id);
+		if (existingEmployee == null) {
+			throw new EmployeeNotFoundException("Employee with ID " + id + " not found for update");
+		}
+		employeeDTO.setId(id); // Ensures the ID is correct
+		EmployeeResponseDTO updatedEmployee = employeeService.saveAndUpdate(employeeDTO);
+		return new ResponseEntity<>(updatedEmployee, HttpStatus.OK);
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<HttpStatus> deleteEmployee(@PathVariable int id) {
+		EmployeeResponseDTO employee1 = employeeService.getEmployeeById(id);
+		if (employee1 == null) {
+			throw new EmployeeNotFoundException("Employee with ID " + id + " not found for deletion");
+		}
+		employeeService.deleteEmployee(employee1);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	@GetMapping("/name/{empName}")
+	public ResponseEntity<List<Employee>> findEmployeeByName(@PathVariable("empName") String name) {
+		List<Employee> employees = employeeService.findEmployeeByName(name);
+		if (employees.isEmpty()) {
+			throw new EmployeeNotFoundException("No employees found with name " + name);
+		}
+		return new ResponseEntity<>(employees, HttpStatus.OK);
+	}
+
+	@GetMapping("/email/{email}")
+	public ResponseEntity<Employee> findEmployeeByEmail(@PathVariable("email") String email) {
+		Employee employee = employeeService.findEmployeeByEmail(email);
+		if (employee == null) {
+			throw new EmployeeNotFoundException("No employee found with email " + email);
+		}
+		return new ResponseEntity<>(employee, HttpStatus.OK);
+	}
+
+	@GetMapping("/active")
+	public ResponseEntity<List<Employee>> findAllActiveEmployees() {
+		List<Employee> employees = employeeService.findAllActiveEmployees();
+		return new ResponseEntity<>(employees, HttpStatus.OK);
+	}
+
+	@GetMapping("/nameStartsWith/{prefix}")
+	public ResponseEntity<List<Employee>> findEmployeesByNameStartingWith(@PathVariable("prefix") String prefix) {
+		List<Employee> employees = employeeService.findEmployeesByNameStartingWith(prefix);
+		return new ResponseEntity<>(employees, HttpStatus.OK);
+	}
+
+	@GetMapping("/salaryGreaterThan/{salary}/designation/{designation}")
+	public ResponseEntity<List<Employee>> findEmployeesBySalaryGreaterThanAndDesignation(
+			@PathVariable("salary") double salary, @PathVariable("designation") String designation) {
+		List<Employee> employees = employeeService.findEmployeesBySalaryGreaterThanAndDesignation(salary, designation);
+		if (employees.isEmpty()) {
+			throw new EmployeeNotFoundException(
+					"No employees found with salary greater than " + salary + " and designation " + designation);
+		}
+		return new ResponseEntity<>(employees, HttpStatus.OK);
+	}
+
+	@GetMapping("/salaryBetween/{startSalary}/{endSalary}")
+	public ResponseEntity<List<Employee>> findEmployeesBySalaryBetween(@PathVariable("startSalary") double startSalary,
+			@PathVariable("endSalary") double endSalary) {
+		List<Employee> employees = employeeService.findEmployeesBySalaryBetween(startSalary, endSalary);
+		if (employees.isEmpty()) {
+			throw new EmployeeNotFoundException(
+					"No employees found with salary between " + startSalary + " and " + endSalary);
+		}
+		return new ResponseEntity<>(employees, HttpStatus.OK);
+	}
+
+	@GetMapping("/active/salaryGreaterThan/{salary}")
+	public ResponseEntity<List<Employee>> findActiveEmployeesWithSalaryGreaterThan(
+			@PathVariable("salary") double salary) {
+		List<Employee> employees = employeeService.findActiveEmployeesWithSalaryGreaterThan(salary);
+		if (employees.isEmpty()) {
+			throw new EmployeeNotFoundException("No active employees found with salary greater than " + salary);
+		}
+		return new ResponseEntity<>(employees, HttpStatus.OK);
+	}
+
+	@GetMapping("/active/count")
+	public ResponseEntity<Long> countActiveEmployees() {
+		long count = employeeService.countActiveEmployees();
+		return new ResponseEntity<>(count, HttpStatus.OK);
+	}
+
+	@GetMapping("/countByDesignation/{designation}")
+	public ResponseEntity<Long> countEmployeesByDesignation(@PathVariable("designation") String designation) {
+		long count = employeeService.countEmployeesByDesignation(designation);
+		return new ResponseEntity<>(count, HttpStatus.OK);
+	}
+
+}

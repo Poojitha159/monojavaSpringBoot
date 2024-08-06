@@ -1,0 +1,17 @@
+package com.techlabs.app.dto;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+public class BlogDTO {
+
+	  private Long id;
+	    private String title;
+	    private String category;
+	    private String data;
+	    private LocalDateTime publishedDate;
+	    private boolean published;
+	    private List<CommentDTO> comments;
+	
+	
+}

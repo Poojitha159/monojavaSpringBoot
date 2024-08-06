@@ -1,0 +1,32 @@
+package com.techlabs.app.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.techlabs.app.exception.MessagingException;
+import com.techlabs.app.service.EmailService;
+
+@RestController
+public class EmailController {
+
+
+	@Autowired
+    private EmailService emailService;
+
+    @GetMapping("/sendEmail")
+    public String sendEmail(@RequestParam String to, @RequestParam String subject, @RequestParam String text, @RequestParam String attachmentPath)  {
+        try {
+            try {
+				emailService.sendEmailWithAttachment(to, subject, text, attachmentPath);
+			} catch (jakarta.mail.MessagingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+            return "Email sent successfully!";
+        } catch (MessagingException e) {
+            return "Error while sending email: " + e.getMessage();
+        }
+    }
+}

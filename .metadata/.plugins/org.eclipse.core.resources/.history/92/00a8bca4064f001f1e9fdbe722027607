@@ -1,0 +1,42 @@
+package com.techlabs.app.service;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+@Service
+public class FileService {
+	@Value("${file.upload-dir}")
+    private String uploadDir;
+
+    public String storeFile(MultipartFile file) throws IOException {
+        if (file.isEmpty()) {
+            throw new IOException("File is empty");
+        }
+       // byte[] bytes = file.getBytes();
+       // Path path = Paths.get(uploadDir + file.getOriginalFilename());
+       // Files.write(path, bytes);
+        Path filePath=(Path) Paths.get(uploadDir).resolve(file.getOriginalFilename());
+      Files.write(filePath , file.getBytes());
+        //Files.write(Path filePath, byte[] byte);
+
+        
+        return filePath.toString();
+    }
+
+    public File getFile(String filename) {
+        Path filePath = (Path) Paths.get(uploadDir) .resolve(filename);
+        return ((java.nio.file.Path) filePath).toFile();
+    }
+
+	public void saveFile(MultipartFile file) {
+		// TODO Auto-generated method stub
+		
+	}
+}

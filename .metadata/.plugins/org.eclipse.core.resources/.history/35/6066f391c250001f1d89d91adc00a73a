@@ -1,0 +1,18 @@
+package com.techlabs.app.service;
+
+import java.util.List;
+import java.util.Optional;
+
+import com.techlabs.app.entity.Instructor;
+
+public interface InstructorService {
+
+	List<Instructor> findAllInstructors();
+
+	Instructor saveInstructor(Instructor instructor);
+
+	void deleteById(int id);
+
+	Optional<Instructor> getInstructorByid(int id);
+
+}

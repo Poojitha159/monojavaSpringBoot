@@ -1,0 +1,78 @@
+package com.techlabs.app.controller;
+
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.techlabs.app.dto.BlogDTO;
+import com.techlabs.app.entity.Blog;
+import com.techlabs.app.entity.Comment;
+import com.techlabs.app.entity.Course;
+import com.techlabs.app.entity.Instructor;
+import com.techlabs.app.service.BlogService;
+
+@RestController
+@RequestMapping("/api/blogs")
+public class BlogController {
+
+	private final BlogService blogService;
+
+	public BlogController(BlogService blogService) {
+		this.blogService = blogService;
+	}
+
+	@GetMapping
+	public ResponseEntity<List<BlogDTO>> getAllBlogs() {
+		List<BlogDTO> blogs = blogService.getAllBlogs();
+		return new ResponseEntity<>(blogs, HttpStatus.OK);
+
+		// return instructorService.findAllInstructors();
+
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<BlogDTO> getBlogById(@PathVariable int id) {
+		BlogDTO blog = blogService.getBlogById(id);
+		return new ResponseEntity<>(blog, HttpStatus.OK);
+	}
+
+	@PostMapping
+	public ResponseEntity<BlogDTO> createBlog(@RequestBody BlogDTO blogDTO) {
+		BlogDTO createdBlog = blogService.createBlog(blogDTO);
+		return new ResponseEntity<>(createdBlog, HttpStatus.CREATED);
+		// return instructorService.saveInstructor(instructor);
+	}
+
+	@PutMapping("/{id}")
+	public ResponseEntity<BlogDTO> updateBlog(@PathVariable int id, @RequestBody BlogDTO blogDTO) {
+		BlogDTO updatedBlog = blogService.updateBlog(id, blogDTO);
+		return new ResponseEntity<>(updatedBlog, HttpStatus.OK);
+	}
+
+	@DeleteMapping("/remove/{id}")
+	public ResponseEntity<Void> deleteBlog(@PathVariable int id) {
+		blogService.deleteBlog(id);
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+	}
+
+	/*
+	 * @DeleteMapping("/remove/{id}") public void deleteInstructor(@PathVariable int
+	 * id) { //instructorService.deleteById(id); Instructor instructor =
+	 * instructorService.getInstructorByid(id); if(instructor!=null) { List<Course>
+	 * courses=instructor.getCourse(); for(Course course:courses) {
+	 * course.setInstructor(instructor); } instructorService.deleteById(instructor);
+	 * }
+	 * 
+	 * }
+	 */
+}

@@ -1,0 +1,24 @@
+package com.techlabs.app.dto;
+
+import jakarta.validation.constraints.NotBlank;
+
+public class CommentDTO {
+
+	private int id;
+
+	// @NotBlank(message = "Description is required")
+	private String description;
+	
+	
+
+	public CommentDTO() {
+	}
+
+	
+
+	@Override
+	public String toString() {
+		return "CommentDTO [id=" + id + ", description=" + description + "]";
+	}
+
+}

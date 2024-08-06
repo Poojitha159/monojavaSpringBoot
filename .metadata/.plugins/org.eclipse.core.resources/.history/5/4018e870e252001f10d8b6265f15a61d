@@ -1,0 +1,87 @@
+package com.techlabs.app.dto;
+/*
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+
+@Data
+public class CommentDTO {
+    private int id;
+    
+    @NotBlank(message="Descriptipn is mandatory")
+    private String description;
+    
+    @ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="blog_id")
+    @JsonBackReference
+    private int blogId;
+
+    public int getId() {
+        return id;
+      }
+
+      public void setId(int id) {
+        this.id = id;
+      }
+
+      public String getDescription() {
+        return description;
+      }
+
+      public void setDescription(String description) {
+        this.description = description;
+      }
+
+      public int getBlogId() {
+        return blogId;
+      }
+
+      public void setBlogId(int blogId) {
+        this.blogId = blogId;
+      }
+	    
+}
+*/
+
+import jakarta.validation.constraints.NotBlank;
+
+public class CommentDTO {
+
+    private int id;
+
+    @NotBlank(message = "Description is required")
+    private String description;
+
+    private int blogId;
+
+  public int getId() {
+    return id;
+  }
+
+  public void setId(int id) {
+    this.id = id;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public int getBlogId() {
+    return blogId;
+  }
+
+  public void setBlogId(int blogId) {
+    this.blogId = blogId;
+  }
+
+   
+}
+

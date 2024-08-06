@@ -1,0 +1,54 @@
+package com.techlabs.app.service;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.techlabs.app.entity.Blog;
+import com.techlabs.app.repository.BlogRepository;
+
+@Service
+public class BlogServiceImpl implements BlogService{
+	
+	private BlogRepository blogRepository;
+	
+	
+
+	public BlogServiceImpl(BlogRepository blogRepository) {
+		super();
+		this.blogRepository = blogRepository;
+	}
+
+	@Override
+	public List<BlogDTO> getAllBlogs() {
+				return blogRepository.findAll();
+	}
+
+	@Override
+	public BlogDTO getBlogById(int id) {
+		//Blog blog=blogRepository.findById(id);
+		
+		return blogRepository.findById(id);
+	}
+
+	@Override
+	public Blog createBlog(BlogDTO blogDTO) {
+
+Blog blog=blogRepository.save(blogDTO);
+return blog;
+	}
+
+	@Override
+	public BlogDTO updateBlog(int id, Blog blogDTO) {
+		BlogDTO blog=blogRepository.findById(id);
+		
+		return null;
+	}
+
+	@Override
+	public void deleteBlog(int id) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

@@ -1,0 +1,53 @@
+package com.techlabs.app.dto;
+
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.Data;
+
+@Data
+public class CommentDTO {
+    private int id;
+    private String description;
+    @ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="blog_id")
+    private int blogId;
+
+	public CommentDTO(int id, String description, int blogId) {
+		super();
+		this.id = id;
+		this.description = description;
+		this.blogId = blogId;
+	}
+
+	public CommentDTO() {
+		super();
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public int getBlogId() {
+		return blogId;
+	}
+
+	public void setBlogId(int blogId) {
+		this.blogId = blogId;
+	}
+	
+    
+    
+}

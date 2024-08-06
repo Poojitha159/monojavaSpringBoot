@@ -1,0 +1,87 @@
+package com.techlabs.app.service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Service;
+
+import com.techlabs.app.dto.BlogDTO;
+import com.techlabs.app.entity.Blog;
+import com.techlabs.app.repository.BlogRepository;
+
+@Service
+public class BlogServiceImpl implements BlogService{
+	
+	private BlogRepository blogRepository;
+	
+	
+
+	public BlogServiceImpl(BlogRepository blogRepository) {
+		super();
+		this.blogRepository = blogRepository;
+	}
+
+	@Override
+    public List<BlogDTO> getAllBlogs() {
+        return blogRepository.findAll()
+        		.stream()
+        		.map(this::convertToDTO)
+        		.collect(Collectors.toList());
+    }
+
+    @Override
+    public BlogDTO getBlogById(int id) {
+        Blog blog = blogRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Blog not found with id " + id));
+        return convertToDTO(blog);
+    }
+
+    @Override
+    public BlogDTO createBlog(BlogDTO blogDTO) {
+        Blog blog = convertToEntity(blogDTO);
+        Blog savedBlog = blogRepository.save(blog);
+        return convertToDTO(savedBlog);
+    }
+
+    @Override
+    public BlogDTO updateBlog(int id, BlogDTO blogDTO) {
+        Blog existingBlog = blogRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Blog not found with id " + id));
+      //  BeanUtils.copyProperties(blogDTO, existingBlog, "id");
+                existingBlog.setTitle(blogDTO.getTitle());
+        existingBlog.setCategory(blogDTO.getCategory());
+        existingBlog.setData(blogDTO.getData());
+        existingBlog.setPublishedDate(blogDTO.getPublishedDate());
+        existingBlog.setPublished(blogDTO.isPublished());
+        
+         Blog updatedBlog = blogRepository.save(existingBlog);
+        return convertToDTO(updatedBlog);
+    }
+
+    @Override
+    public void deleteBlog(int id) {
+        Blog existingBlog = blogRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Blog not found with id " + id));
+        blogRepository.delete(existingBlog);
+    }
+
+    private BlogDTO convertToDTO(Blog blog) {
+        BlogDTO blogDTO = new BlogDTO();
+       // BeanUtils.copyProperties(blog, blogDTO);
+        blogDTO.setTitle(blog.getTitle());
+        blogDTO.setCategory(blog.getCategory());
+        blogDTO.setData(blog.getData());
+        blogDTO.setPublishedDate(blog.getPublishedDate());
+        blogDTO.setPublished(blog.isPublished());
+        
+        
+        return blogDTO;
+    }
+
+    private Blog convertToEntity(BlogDTO blogDTO) {
+        Blog blog = new Blog();
+        BeanUtils.copyProperties(blogDTO, blog);
+        return blog;
+    }
+}

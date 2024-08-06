@@ -1,0 +1,24 @@
+package com.techlabs.app.service;
+
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+
+import com.techlabs.app.dto.CommentDTO;
+
+public interface CommentService {
+
+	ResponseEntity<List<CommentDTO>> getAllComments();
+
+	CommentDTO getCommentById(int id);
+
+	
+	CommentDTO updateComment(int id, CommentDTO commentDTO);
+
+	void deleteComment(int id);
+
+	CommentDTO addComment(CommentDTO commentDTO);
+
+	
+
+}

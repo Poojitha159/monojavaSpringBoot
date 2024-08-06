@@ -1,0 +1,9 @@
+package com.techlabs.app.service;
+
+import com.techlabs.app.entity.Student;
+
+public interface StudentCourseService {
+
+	Student saveStudent(Student student);
+
+}

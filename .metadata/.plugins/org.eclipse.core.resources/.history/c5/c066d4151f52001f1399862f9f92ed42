@@ -1,0 +1,21 @@
+package com.techlabs.app.service;
+
+import java.util.List;
+
+import com.techlabs.app.entity.Blog;
+
+public interface BlogService {
+
+	List<Blog> getAllBlogs();
+
+	Blog getBlogById(int id);
+
+	Blog createBlog(Blog blogDTO);
+
+	Blog updateBlog(Long id, Blog blogDTO);
+
+	void deleteBlog(int id);
+	
+	
+
+}

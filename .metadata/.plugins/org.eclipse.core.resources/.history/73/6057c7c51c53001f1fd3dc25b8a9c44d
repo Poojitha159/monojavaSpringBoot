@@ -1,0 +1,60 @@
+package com.techlabs.app.controller;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.ResponseEntity.HeadersBuilder;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.techlabs.app.dto.EmployeeResponseDTO;
+import com.techlabs.app.entity.Student;
+import com.techlabs.app.exception.EmployeeNotFoundException;
+import com.techlabs.app.service.StudentCourseService;
+
+@RestController
+@RequestMapping("/api")
+
+public class StudentCourseController {
+	
+	private StudentCourseService studentCourseService;
+
+	public StudentCourseController(StudentCourseService studentCourseService) {
+		super();
+		this.studentCourseService = studentCourseService;
+	}
+	
+	@PostMapping("/students")
+	public Student createStudent(@RequestBody Student student) {
+		return studentCourseService.saveStudent(student);
+	}
+	
+	@GetMapping("/students")
+	public List<Student> getAllStudents(){
+		return studentCourseService.getAllStudents();
+	}
+
+	@GetMapping("/students/{id}")
+	public ResponseEntity<Student> getStudentById(@PathVariable int id){
+		Optional<Student> student=studentCourseService.getStudentById(id);
+		
+		if(student==null) {
+			System.out.println("student not found with id "+id);
+		}
+		//return student.map(ResponseEntity::OK).orElse(()->ResponseEntity.notFound().build());
+		return new ResponseEntity<Student>(HttpStatus.OK);
+	}
+	
+	@DeleteMapping("/students/{id}")
+	public HeadersBuilder<?> deleteStudent(@PathVariable int id){
+		studentCourseService.deleteStudent(id);
+		return ResponseEntity.noContent();
+	}
+}

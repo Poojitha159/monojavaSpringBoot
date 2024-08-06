@@ -1,0 +1,87 @@
+package com.techlabs.app.controller;
+
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.techlabs.app.dto.BlogDTO;
+import com.techlabs.app.entity.Blog;
+import com.techlabs.app.entity.Comment;
+
+import com.techlabs.app.service.BlogService;
+import com.techlabs.app.service.BlogServiceImpl;
+import com.techlabs.app.service.CommentService;
+import com.techlabs.app.service.CommentServiceImpl;
+
+import jakarta.validation.Valid;
+
+@RestController
+@RequestMapping("/api/blogs")
+public class BlogController {
+
+	private final BlogService blogService;
+	private final CommentService commentService;
+
+	
+	public BlogController(BlogService blogService, CommentService commentService) {
+		super();
+		this.blogService = blogService;
+		this.commentService = commentService;
+	}
+
+	@GetMapping
+	public ResponseEntity<List<BlogDTO>> getAllBlogs() {
+		List<BlogDTO> blogs = blogService.getAllBlogs();
+		return new ResponseEntity<>(blogs, HttpStatus.OK);
+
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<BlogDTO> getBlogById(@PathVariable int id) {
+		BlogDTO blog = blogService.getBlogById(id);
+		return new ResponseEntity<>(blog, HttpStatus.OK);
+	}
+
+	@PostMapping
+	public ResponseEntity<BlogDTO> createBlog(@RequestBody BlogDTO blogDTO) {
+		BlogDTO createdBlog = blogService.createBlog(blogDTO);
+		return new ResponseEntity<>(createdBlog, HttpStatus.CREATED);
+		
+	}
+
+	@PutMapping("/{id}")
+	public ResponseEntity<BlogDTO> updateBlog(@Valid @PathVariable int id, @RequestBody BlogDTO blogDTO) {
+		BlogDTO updatedBlog = blogService.updateBlog(id, blogDTO);
+		return new ResponseEntity<>(updatedBlog, HttpStatus.OK);
+	}
+
+	@DeleteMapping("/remove/{id}")
+	public ResponseEntity<BlogDTO> deleteBlog(@PathVariable int id) {
+		BlogDTO blog=blogService.deleteBlog(id);
+		return new ResponseEntity<>(blog,HttpStatus.NO_CONTENT);
+
+	}
+	
+	@PutMapping("/assign/commentToBlog/{cId}/{bId}")
+	public ResponseEntity<BlogDTO> assignCommentToABlog(@PathVariable(name = "bId") int bId, @PathVariable(name = "cId") int cId) {
+		BlogDTO dto = blogService.assignCommentToABlog(cId,bId);
+		return new ResponseEntity<>(dto, HttpStatus.OK);
+
+	}
+	@PutMapping("/remove/commentToBlog/{cId}/{bId}")
+	public ResponseEntity<BlogDTO> removeCommentToABlog(@PathVariable(name = "bId") int bId, @PathVariable(name = "cId") int cId) {
+		BlogDTO dto = blogService.removeCommentToABlog(cId,bId);
+		return new ResponseEntity<>(dto, HttpStatus.OK);
+
+	}
+
+}

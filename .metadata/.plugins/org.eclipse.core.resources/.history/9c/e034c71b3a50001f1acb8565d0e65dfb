@@ -1,0 +1,170 @@
+package com.techlabs.app.service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.techlabs.app.dto.EmployeeDTO;
+import com.techlabs.app.entity.Employee;
+import com.techlabs.app.exception.EmployeeNotFoundException;
+import com.techlabs.app.repository.EmployeeRepository;
+import com.techlabs.app.utils.PagedResponse;
+
+@Service
+public class EmployeeServiceImpl implements EmployeeService{
+
+	  @Autowired
+	  private EmployeeRepository employeeRepository;
+
+	  @Override
+	  public EmployeeDTO addEmployee(EmployeeDTO employeeDTO) {
+	    Employee employee = convertToEntity(employeeDTO);
+	    Employee savedEmployee = employeeRepository.save(employee);
+	    return convertToDTO(savedEmployee);
+	  }
+
+	  @Override
+	  public EmployeeDTO getEmployeeById(Long id) {
+	    Employee employee = employeeRepository.findById(id)
+	        .orElseThrow(() -> new EmployeeNotFoundException("Employee not found with id " + id));
+	    return convertToDTO(employee);
+	  }
+
+	  @Override
+	  public PagedResponse<EmployeeDTO> getAllEmployees(int page, int size, String sortBy, String direction) {
+	    Sort sort = direction.equalsIgnoreCase(Sort.Direction.DESC.name()) ? Sort.by(sortBy).descending()
+	        : Sort.by(sortBy).ascending();
+	    Pageable pageable = PageRequest.of(page, size, sort);
+	    Page<Employee> employeePage = employeeRepository.findAll(pageable);
+	    List<EmployeeDTO> employeeDTOs = employeePage.getContent().stream().map(this::convertToDTO)
+	        .collect(Collectors.toList());
+
+	    return new PagedResponse<>(employeeDTOs, employeePage.getNumber(), employeePage.getSize(),
+	        employeePage.getTotalElements(), employeePage.getTotalPages(), employeePage.isLast());
+	  }
+
+	  @Override
+	  public EmployeeDTO updateEmployee(Long id, EmployeeDTO employeeDTO) {
+	    Employee employee = employeeRepository.findById(id)
+	        .orElseThrow(() -> new EmployeeNotFoundException("Employee not found with id " + id));
+
+	    employee.setName(employeeDTO.getName());
+	    employee.setDesignation(employeeDTO.getDesignation());
+	    employee.setSalary(employeeDTO.getSalary());
+	    employee.setEmail(employeeDTO.getEmail());
+	    employee.setActive(employeeDTO.isActive());
+
+	    Employee updatedEmployee = employeeRepository.save(employee);
+	    return convertToDTO(updatedEmployee);
+	  }
+
+	  @Override
+	  public void deleteEmployee(Long id) {
+	    Employee employee = employeeRepository.findById(id)
+	        .orElseThrow(() -> new EmployeeNotFoundException("Employee not found with id " + id));
+	    employeeRepository.delete(employee);
+	  }
+
+	  private EmployeeDTO convertToDTO(Employee employee) {
+	    EmployeeDTO employeeDTO = new EmployeeDTO();
+	    employeeDTO.setId(employee.getId());
+	    employeeDTO.setName(employee.getName());
+	    employeeDTO.setDesignation(employee.getDesignation());
+	    employeeDTO.setSalary(employee.getSalary());
+	    employeeDTO.setEmail(employee.getEmail());
+	    employeeDTO.setActive(employee.isActive());
+	    return employeeDTO;
+	  }
+
+	  private Employee convertToEntity(EmployeeDTO employeeDTO) {
+	    Employee employee = new Employee();
+	    employee.setName(employeeDTO.getName());
+	    employee.setDesignation(employeeDTO.getDesignation());
+	    employee.setSalary(employeeDTO.getSalary());
+	    employee.setEmail(employeeDTO.getEmail());
+	    employee.setActive(employeeDTO.isActive());
+	    return employee;
+	  }
+	/*
+	   * @Override public List<Employee> findEmployeeByName(String name) { return
+	   * employeeRepository.findByName(name); }
+	   * 
+	   * @Override public Employee findEmployeeByEmail(String email) { return
+	   * employeeRepository.findByEmail(email); }
+	   * 
+	   * @Override public List<Employee> findAllActiveEmployees() { return
+	   * employeeRepository.findAllActiveEmployees(); }
+	   * 
+	   * @Override public List<Employee> findEmployeesByNameStartingWith(String
+	   * prefix) { return employeeRepository.findByNameStartingWith(prefix); }
+	   * 
+	   * @Override public List<Employee>
+	   * findEmployeesBySalaryGreaterThanAndDesignation(double salary, String
+	   * designation) { return
+	   * employeeRepository.findBySalaryGreaterThanAndDesignation(salary,
+	   * designation); }
+	   * 
+	   * @Override public List<Employee> findEmployeesBySalaryBetween(double
+	   * startSalary, double endSalary) { return
+	   * employeeRepository.findBySalaryBetween(startSalary, endSalary); }
+	   * 
+	   * @Override public List<Employee>
+	   * findActiveEmployeesWithSalaryGreaterThan(double salary) { return
+	   * employeeRepository.findActiveEmployeesWithSalaryGreaterThan(salary); }
+	   * 
+	   * @Override public long countActiveEmployees() { return
+	   * employeeRepository.countActiveEmployees(); }
+	   * 
+	   * @Override public long countEmployeesByDesignation(String designation) {
+	   * return employeeRepository.countEmployeesByDesignation(designation); }
+	   */
+	  @Override
+	  public List<Employee> findEmployeeByName(String name) {
+	    return employeeRepository.findByName(name);
+	  }
+
+	  @Override
+	  public Employee findEmployeeByEmail(String email) {
+	    return employeeRepository.findByEmailNative(email);
+	  }
+
+	  @Override
+	  public List<Employee> findAllActiveEmployees() {
+	    return employeeRepository.findAllActiveEmployeesNative();
+	  }
+
+	  @Override
+	  public List<Employee> findEmployeesByNameStartingWith(String prefix) {
+	    return employeeRepository.findEmployeesByNameStartingWithNative(prefix);
+	  }
+
+	  @Override
+	  public List<Employee> findEmployeesBySalaryGreaterThanAndDesignation(double salary, String designation) {
+	    return employeeRepository.findBySalaryGreaterThanAndDesignationNative(salary, designation);
+	  }
+
+	  @Override
+	  public List<Employee> findEmployeesBySalaryBetween(double startSalary, double endSalary) {
+	    return employeeRepository.findEmployeesBySalaryBetweenNative(startSalary, endSalary);
+	  }
+
+	  @Override
+	  public List<Employee> findActiveEmployeesWithSalaryGreaterThan(double salary) {
+	    return employeeRepository.findActiveEmployeesWithSalaryGreaterThanNative(salary);
+	  }
+
+	  @Override
+	  public long countActiveEmployees() {
+	    return employeeRepository.countActiveEmployeesNative();
+	  }
+
+	  @Override
+	  public long countEmployeesByDesignation(String designation) {
+	    return employeeRepository.countEmployeesByDesignationNative(designation);
+	  }
+	}

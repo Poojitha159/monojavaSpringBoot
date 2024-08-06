@@ -1,0 +1,12 @@
+package com.techlabs.app.exception;
+
+public class NotFoundException extends RuntimeException {
+	public NotFoundException(String s) {
+		super(s);
+	}
+
+	public String getMessage(String msg) {
+		// TODO Auto-generated method stub
+		return msg;
+	}
+}

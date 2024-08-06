@@ -1,0 +1,22 @@
+package com.techlabs.app.repository;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.techlabs.app.dto.BlogDTO;
+import com.techlabs.app.entity.Blog;
+
+public interface BlogRepository extends JpaRepository<Blog,Integer>{
+
+	List<BlogDTO> findAll();
+
+	BlogDTO findById(int id);
+
+	BlogDTO save(BlogDTO blogDTO);
+
+	void delete(Blog existingBlog);
+
+	Blog save(Blog blog);
+
+}

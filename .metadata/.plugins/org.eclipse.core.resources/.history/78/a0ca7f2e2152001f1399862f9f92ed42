@@ -1,0 +1,16 @@
+package com.techlabs.app.repository;
+
+import java.util.List;
+
+import com.techlabs.app.dto.BlogDTO;
+import com.techlabs.app.entity.Blog;
+
+public interface BlogRepository {
+
+	List<BlogDTO> findAll();
+
+	BlogDTO findById(int id);
+
+	BlogDTO save(BlogDTO blogDTO);
+
+}

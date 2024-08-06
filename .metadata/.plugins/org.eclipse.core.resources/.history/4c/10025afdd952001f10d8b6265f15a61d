@@ -1,0 +1,122 @@
+package com.techlabs.app.service;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Service;
+
+import com.techlabs.app.dto.BlogDTO;
+import com.techlabs.app.entity.Blog;
+import com.techlabs.app.exception.ResourceNotFoundException;
+import com.techlabs.app.repository.BlogRepository;
+import com.techlabs.app.repository.CommentRepository;
+
+@Service
+public class BlogServiceImpl implements BlogService{
+	
+	private BlogRepository blogRepository;
+	
+	private CommentRepository commentRepository;
+
+
+	public BlogServiceImpl(BlogRepository blogRepository, CommentRepository commentRepository) {
+		super();
+		this.blogRepository = blogRepository;
+		this.commentRepository = commentRepository;
+	}
+
+	@Override
+    public List<BlogDTO> getAllBlogs() {
+		 List<Blog> lst=blogRepository.findAll();
+		 System.out.println(lst);
+        return lst
+        		.stream()
+        		.map(this::convertToDTO)
+        		.collect(Collectors.toList());
+    }
+
+    @Override
+    public BlogDTO getBlogById(int id) {
+        Blog blog = blogRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Blog not found with id " + id));
+        return convertToDTO(blog);
+    }
+
+    @Override
+    public BlogDTO createBlog(BlogDTO blogDTO) {
+        Blog blog = convertToEntity(blogDTO);
+        Blog savedBlog = blogRepository.save(blog);
+        return convertToDTO(savedBlog);
+    }
+
+    @Override
+    public BlogDTO updateBlog(int id, BlogDTO blogDTO) {
+        Blog existingBlog = blogRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Blog not found with id " + id));
+      //  BeanUtils.copyProperties(blogDTO, existingBlog, "id");
+        existingBlog.setTitle(blogDTO.getTitle());
+        existingBlog.setCategory(blogDTO.getCategory());
+        existingBlog.setData(blogDTO.getData());
+        existingBlog.setPublishedDate(blogDTO.getPublishedDate());
+        existingBlog.setPublished(blogDTO.isPublished());
+        
+         Blog updatedBlog = blogRepository.save(existingBlog);
+        return convertToDTO(updatedBlog);
+    }
+
+    @Override
+    public BlogDTO deleteBlog(int id) {
+        Optional<Blog> blogOptional = blogRepository.findById(id);
+        if (blogOptional.isPresent()) {
+            blogRepository.delete(blogOptional.get());
+        } else {
+            throw new ResourceNotFoundException("Blog not found with id " + id);
+        }
+		return null;
+    }
+
+
+    private BlogDTO convertToDTO(Blog blog) {
+        BlogDTO blogDTO = new BlogDTO();
+       // BeanUtils.copyProperties(blog, blogDTO);
+        blogDTO.setId(blog.getId());
+        blogDTO.setTitle(blog.getTitle());
+        blogDTO.setCategory(blog.getCategory());
+        blogDTO.setData(blog.getData());
+        blogDTO.setPublishedDate(blog.getPublishedDate());
+        blogDTO.setPublished(blog.isPublished());
+        
+        
+        return blogDTO;
+    }
+
+    private Blog convertToEntity(BlogDTO blogDTO) {
+        Blog blog = new Blog();
+        //BeanUtils.copyProperties(blogDTO, blog);
+        
+        blog.setId(blogDTO.getId());
+        blog.setTitle(blogDTO.getTitle());
+        blog.setCategory(blogDTO.getCategory());
+        blog.setData(blogDTO.getData());
+        blog.setPublishedDate(blogDTO.getPublishedDate());
+        blog.setPublished(blogDTO.isPublished());
+        return blog;
+    }
+
+	@Override
+	public BlogDTO assignCommentToABlog(int cId, int bId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BlogDTO removeCommentToABlog(int cId, int bId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+}
+
+
+

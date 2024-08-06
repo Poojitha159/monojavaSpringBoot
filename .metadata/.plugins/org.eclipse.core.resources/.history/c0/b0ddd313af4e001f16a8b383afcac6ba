@@ -1,0 +1,7 @@
+spring.application.name=06-mailAttachmentt
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.username=makkenaharshini@gmail.com
+spring.mail.password=sfau cngv wbeg rrkl
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
